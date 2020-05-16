@@ -1,6 +1,7 @@
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector4f;
 
 public class Camera {
 	
@@ -14,7 +15,8 @@ public class Camera {
 	
 	public float rzy = 0;
 	public float rzx = 0;
-	public float ryw = 0;
+	public float rxw = 0;
+	public float rzw = 0;
 	
 	private long lastTime = System.nanoTime();
 	
@@ -33,26 +35,29 @@ public class Camera {
 		}
 		
 		if (Mouse.isGrabbed()) {
-			rzx += Mouse.getDX()*mouseSpeed;
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-				ryw += Mouse.getDY()*mouseSpeed;
+				rxw += Mouse.getDX()*mouseSpeed;
+				rzw += Mouse.getDY()*mouseSpeed;
 			} else {
+				rzx += Mouse.getDX()*mouseSpeed;
 				rzy += Mouse.getDY()*mouseSpeed;
 			}
 			if (rzx > Math.PI*2) rzx -= Math.PI*2;
 			if (rzx < 0) rzx += Math.PI*2;
 			if (rzy > Math.PI/2) rzy = (float) (Math.PI/2);
 			if (rzy < -Math.PI/2) rzy = (float) (-Math.PI/2);
-			if (ryw > Math.PI/2) ryw = (float) (Math.PI/2);
-			if (ryw < -Math.PI/2) ryw = (float) (-Math.PI/2);
+			if (rxw > Math.PI/2) rxw = (float) (Math.PI/2);
+			if (rxw < 0) rxw = 0;
+			if (rzw > Math.PI/2) rzw = (float) (Math.PI/2);
+			if (rzw < 0) rzw = 0;
 			
 			int X = 0;
 			int Y = 0;
 			int Z = 0;
 			int W = 0;
 			
-			if (Keyboard.isKeyDown(Keyboard.KEY_W)) Z--;
-			if (Keyboard.isKeyDown(Keyboard.KEY_S)) Z++;
+			if (Keyboard.isKeyDown(Keyboard.KEY_S)) Z--;
+			if (Keyboard.isKeyDown(Keyboard.KEY_W)) Z++;
 			if (Keyboard.isKeyDown(Keyboard.KEY_A)) X--;
 			if (Keyboard.isKeyDown(Keyboard.KEY_D)) X++;
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) Y--;
@@ -60,10 +65,19 @@ public class Camera {
 			if (Keyboard.isKeyDown(Keyboard.KEY_Q)) W--;
 			if (Keyboard.isKeyDown(Keyboard.KEY_E)) W++;
 			
-			x += X*moveSpeed*delta*(float)Math.cos(rzx) - Z*moveSpeed*delta*(float)Math.sin(rzx);
-			z += Z*moveSpeed*delta*(float)Math.cos(rzx) + X*moveSpeed*delta*(float)Math.sin(rzx);
-			y += Y*moveSpeed*delta;
-			w += W*moveSpeed*delta;
+			Vector4f dirx = new Vector4f(1, 0, 0, 0);
+			Vector4f diry = new Vector4f(0, 1, 0, 0);
+			Vector4f dirz = new Vector4f(0, 0, -1, 0);
+			Vector4f dirw = new Vector4f(0, 0, 0, 1);
+			rotate(dirx);
+			rotate(diry);
+			rotate(dirz);
+			rotate(dirw);
+			
+			x += moveSpeed*delta* (X*dirx.x + Z*diry.x + Z*dirz.x + W*dirw.x);
+			y += moveSpeed*delta* (Y*dirx.y + Y*diry.y + Y*dirz.y + Y*dirw.y);
+			z += moveSpeed*delta* (X*dirx.z + Z*diry.z + Z*dirz.z + W*dirw.z);
+			w += moveSpeed*delta* (X*dirx.w + Z*diry.w + Z*dirz.w + W*dirw.w);
 			
 			if (x < 0.01f) x = 0.01f;
 			if (x > 15.99f) x = 15.99f;
@@ -74,5 +88,38 @@ public class Camera {
 			if (w < 0.01f) w = 0.01f;
 			if (w > 15.99f) w = 15.99f;
 		}
+	}
+	
+	private void rotate(Vector4f vector) {
+		float t1;
+		float t2;
+		
+		t1 = cos(rzy)*vector.y - sin(rzy)*vector.z;
+		t2 = cos(rzy)*vector.z + sin(rzy)*vector.y;
+		vector.y = t1;
+		vector.z = t2;
+		
+		t1 = cos(rzx)*vector.x - sin(rzx)*vector.z;
+		t2 = cos(rzx)*vector.z + sin(rzx)*vector.x;
+		vector.x = t1;
+		vector.z = t2;
+		
+		t1 = cos(rxw)*vector.x - sin(rxw)*vector.w;
+		t2 = cos(rxw)*vector.w + sin(rxw)*vector.x;
+		vector.x = t1;
+		vector.w = t2;
+		
+		t1 = cos(rzw)*vector.z - sin(rzw)*vector.w;
+		t2 = cos(rzw)*vector.w + sin(rzw)*vector.z;
+		vector.z = t1;
+		vector.w = t2;
+	}
+	
+	private float sin(float angle) {
+		return (float)Math.sin(angle);
+	}
+	
+	private float cos(float angle) {
+		return (float)Math.cos(angle);
 	}
 }

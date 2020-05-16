@@ -6,7 +6,7 @@ in vec2 texcoord;
 out vec4 color;
 
 uniform vec4 cameraPos;
-uniform vec3 cameraRot;
+uniform vec4 cameraRot;
 
 layout(std430, binding = 1) buffer chunk
 {
@@ -22,17 +22,20 @@ vec4 getRaySphere() {
 		);
 }
 
-vec4 rotate(vec4 ray, vec3 rotation) {
+vec4 getRayFlat() {
+	return vec4(
+		texcoord.x*2,
+		texcoord.y,
+		-1,
+		0
+		);
+}
+
+vec4 rotate(vec4 ray, vec4 rotation) {
 	float x;
 	float y;
 	float z;
 	float w;
-	//rotate yw
-	y = cos(rotation.z)*ray.y - sin(rotation.z)*ray.w;
-	w = cos(rotation.z)*ray.w + sin(rotation.z)*ray.y;
-	ray.y = y;
-	ray.w = w;
-
 	//rotate zy
 	y = cos(rotation.x)*ray.y - sin(rotation.x)*ray.z;
 	z = cos(rotation.x)*ray.z + sin(rotation.x)*ray.y;
@@ -44,6 +47,18 @@ vec4 rotate(vec4 ray, vec3 rotation) {
   z = cos(rotation.y)*ray.z + sin(rotation.y)*ray.x;
 	ray.x = x;
 	ray.z = z;
+
+	//rotate xw
+	x = cos(rotation.z)*ray.x - sin(rotation.z)*ray.w;
+	w = cos(rotation.z)*ray.w + sin(rotation.z)*ray.x;
+	ray.x = x;
+	ray.w = w;
+
+	//rotate zw
+	z = cos(rotation.w)*ray.z - sin(rotation.w)*ray.w;
+	w = cos(rotation.w)*ray.w + sin(rotation.w)*ray.z;
+	ray.z = z;
+	ray.w = w;
 
 	return ray;
 }

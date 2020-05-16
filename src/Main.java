@@ -33,7 +33,7 @@ public class Main {
 		int cameraPositionUniform = GL20.glGetUniformLocation(shaderProgram, "cameraPos");
 		GL20.glUniform4f(cameraPositionUniform, camera.x, camera.y, camera.z, camera.w);
 		int cameraRotationUniform = GL20.glGetUniformLocation(shaderProgram, "cameraRot");
-		GL20.glUniform3f(cameraRotationUniform, camera.rzy, camera.rzx, camera.ryw);
+		GL20.glUniform4f(cameraRotationUniform, camera.rzy, camera.rzx, camera.rxw, camera.rzw);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2f(-1, 1);
 		GL11.glVertex2f(1, 1);
@@ -60,8 +60,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		int width = 800;
-		int height = 600;
+		int width = 1600;
+		int height = 800;
 		int fpsMax = 60;
 		ShaderManager shaderManager = new ShaderManager();
 		try {
