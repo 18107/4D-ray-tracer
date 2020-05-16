@@ -74,10 +74,10 @@ public class Camera {
 			rotate(dirz);
 			rotate(dirw);
 			
-			x += moveSpeed*delta* (X*dirx.x + Z*diry.x + Z*dirz.x + W*dirw.x);
-			y += moveSpeed*delta* (Y*dirx.y + Y*diry.y + Y*dirz.y + Y*dirw.y);
-			z += moveSpeed*delta* (X*dirx.z + Z*diry.z + Z*dirz.z + W*dirw.z);
-			w += moveSpeed*delta* (X*dirx.w + Z*diry.w + Z*dirz.w + W*dirw.w);
+			x += moveSpeed*delta* (X*dirx.x + Y*diry.x + Z*dirz.x + W*dirw.x);
+			y += moveSpeed*delta* (X*dirx.y + Y*diry.y + Z*dirz.y + W*dirw.y);
+			z += moveSpeed*delta* (X*dirx.z + Y*diry.z + Z*dirz.z + W*dirw.z);
+			w += moveSpeed*delta* (X*dirx.w + Y*diry.w + Z*dirz.w + W*dirw.w);
 			
 			if (x < 0.01f) x = 0.01f;
 			if (x > 15.99f) x = 15.99f;
@@ -94,10 +94,10 @@ public class Camera {
 		float t1;
 		float t2;
 		
-		t1 = cos(rzy)*vector.y - sin(rzy)*vector.z;
-		t2 = cos(rzy)*vector.z + sin(rzy)*vector.y;
-		vector.y = t1;
-		vector.z = t2;
+		//t1 = cos(rzy)*vector.y - sin(rzy)*vector.z;
+		//t2 = cos(rzy)*vector.z + sin(rzy)*vector.y;
+		//vector.y = t1;
+		//vector.z = t2;
 		
 		t1 = cos(rzx)*vector.x - sin(rzx)*vector.z;
 		t2 = cos(rzx)*vector.z + sin(rzx)*vector.x;
