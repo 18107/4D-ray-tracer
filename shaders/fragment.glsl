@@ -116,6 +116,7 @@ void trace(ivec4 current, vec4 nearestCube, vec4 inc, ivec4 iinc) {
 }
 
 void main() {
+	color = vec4(0.529411765, 0.807843137, 0.921568627, 0); //skyblue
 	vec4 rayDir = rotate(getRaySphere(), cameraRot);
 	vec4 point = cameraPos;
 	ivec4 current = ivec4(floor(cameraPos));

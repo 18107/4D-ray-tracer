@@ -47,9 +47,14 @@ public class Camera {
 			if (rzy > Math.PI/2) rzy = (float) (Math.PI/2);
 			if (rzy < -Math.PI/2) rzy = (float) (-Math.PI/2);
 			if (rxw > Math.PI/2) rxw = (float) (Math.PI/2);
-			if (rxw < 0) rxw = 0;
+			if (rxw < -Math.PI/2) rxw = (float) (-Math.PI/2);
 			if (rzw > Math.PI/2) rzw = (float) (Math.PI/2);
-			if (rzw < 0) rzw = 0;
+			if (rzw < -Math.PI/2) rzw = (float) (-Math.PI/2);
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_ADD)) {
+				rxw *= 0.94f;
+				rzw *= 0.94f;
+			}
 			
 			int X = 0;
 			int Y = 0;

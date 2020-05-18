@@ -15,15 +15,6 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		GL11.glViewport(0, 0, width, height);
-		//TODO remove
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(-1, 1, -1, 1, -1, 1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glClearColor(0, 0, 0, 1);
-		
 		shaderManager.createShaderProgram();
 	}
 	

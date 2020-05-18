@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
-import java.util.Random;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -18,86 +17,6 @@ public class ShaderManager {
 	private int program;
 	
 	private int chunkBuffer;
-	
-	private float array[] = new float[16*16*16*16*4];
-	
-	private void setBlock(int x, int y, int z, int w, float r, float g, float b, float a) {
-		int id = w*16*16*16*4 + z*16*16*4 + y*16*4 + x*4;
-		array[id] = r;
-		array[id+1] = g;
-		array[id+2] = b;
-		array[id+3] = a;
-	}
-	
-	private void setupWorld() {
-		Random rand = new Random(18107);
-		for (int w = 0; w < 16; w++) {
-			for (int y = 0; y < 16; y++) {
-				for (int x = 0; x < 16; x++) {
-					int r = rand.nextInt(2);
-					int g = rand.nextInt(2);
-					int b = rand.nextInt(2);
-					int a = (rand.nextInt(10) != 0 || (r == 0 && g == 0 && b == 0)) ? 0 : 1;
-					setBlock(x, y, 1, w, r, g, b, a);
-				}
-			}
-		}
-		
-		//draw xy plane
-		for (int x = 0; x < 16; x++) {
-			for (int y = 0; y < 16; y++) {
-				setBlock(x, y, 0, 0, 0, y/15f, 0.5f, 1);
-				setBlock(x, y, 15, 0, 0, y/15f, 1, 1);
-				setBlock(x, y, 0, 15, 1, y/15f, 0.5f, 1);
-				setBlock(x, y, 15, 15, 1, y/15f, 1, 1);
-			}
-		}
-		//draw xz plane
-		for (int x = 0; x < 16; x++) {
-			for (int z = 0; z < 16; z++) {
-				setBlock(x, 0, z, 0, 0, 0, 0.5f+z/30f, 1);
-				setBlock(x, 15, z, 0, 0, 1, 0.5f+z/30f, 1);
-				setBlock(x, 0, z, 15, 1, 0, 0.5f+z/30f, 1);
-				setBlock(x, 15, z, 15, 1, 1, 0.5f+z/30f, 1);
-			}
-		}
-		//draw xw plane
-		for (int x = 0; x < 16; x++) {
-			for (int w = 0; w < 16; w++) {
-				setBlock(x, 0, 0, w, w/15f, 0, 0.5f, 1);
-				setBlock(x, 15, 0, w, w/15f, 1, 0.5f, 1);
-				setBlock(x, 0, 15, w, w/15f, 0, 1, 1);
-				setBlock(x, 15, 15, w, w/15f, 1, 1, 1);
-			}
-		}
-		//draw yz plane
-		for (int y = 0; y < 16; y++) {
-			for (int z = 0; z < 16; z++) {
-				setBlock(0, y, z, 0, 0, y/15f, 0.5f+z/30f, 1);
-				setBlock(15, y, z, 0, 0, y/15f, 0.5f+z/30f, 1);
-				setBlock(0, y, z, 15, 1, y/15f, 0.5f+z/30f, 1);
-				setBlock(15, y, z, 15, 1, y/15f, 0.5f+z/30f, 1);
-			}
-		}
-		//draw yw plane
-		for (int y = 0; y < 16; y++) {
-			for (int w = 0; w < 16; w++) {
-				setBlock(0, y, 0, w, w/15f, y/15f, 0.5f, 1);
-				setBlock(15, y, 0, w, w/15f, y/15f, 0.5f, 1);
-				setBlock(0, y, 15, w, w/15f, y/15f, 1, 1);
-				setBlock(15, y, 15, w, w/15f, y/15f, 1, 1);
-			}
-		}
-		//draw zw plane
-		for (int z = 0; z < 16; z++) {
-			for (int w = 0; w < 16; w++) {
-				setBlock(0, 0, z, w, w/15f, 0, 0.5f+z/30f, 1);
-				setBlock(15, 0, z, w, w/15f, 0, 0.5f+z/30f, 1);
-				setBlock(0, 15, z, w, w/15f, 1, 0.5f+z/30f, 1);
-				setBlock(15, 15, z, w, w/15f, 1, 0.5f+z/30f, 1);
-			}
-		}
-	}
 	
 	public void createShaderProgram() {
 		vertexShader = createShader("shaders/vertex.glsl", GL20.GL_VERTEX_SHADER);
@@ -119,10 +38,8 @@ public class ShaderManager {
 			throw new RuntimeException();
 		}
 		
-		setupWorld();
-		
 		FloatBuffer floatChunkBuffer = BufferUtils.createFloatBuffer(16*16*16*16*4);
-		floatChunkBuffer.put(array);
+		floatChunkBuffer.put(new WorldManager().getWorld());
 		floatChunkBuffer.flip();
 		
 		chunkBuffer = GL15.glGenBuffers();
