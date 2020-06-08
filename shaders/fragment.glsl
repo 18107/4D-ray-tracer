@@ -67,10 +67,12 @@ vec4 rotate(vec4 ray, vec4 rotation) {
 	return ray;
 }
 
-bool reflect(inout ivec4 current, inout vec4 nearestCube, inout vec4 inc, inout ivec4 iinc, vec4 blockColor) {
-	if (blockColor.r < 0.75 || blockColor.g > 0.25) {
+bool reflect(inout ivec4 current, inout vec4 nearestCube, inout vec4 inc, inout ivec4 iinc, vec4 blockColor, inout vec4 intermediateColor) {
+	blockColor.w = 0.1; //FIXME
+	intermediateColor = vec4(sqrt(mix(intermediateColor.xyz*intermediateColor.xyz, blockColor.xyz*blockColor.xyz, intermediateColor.w)), intermediateColor.w * blockColor.w);
+	/*if (blockColor.r < 0.75 || blockColor.g > 0.25) {
 		return true;
-	}
+	}*/
 
 	vec4 lastCube = nearestCube-inc;
 	if (lastCube.x > lastCube.y) {
@@ -114,17 +116,19 @@ bool reflect(inout ivec4 current, inout vec4 nearestCube, inout vec4 inc, inout 
 }
 
 vec4 trace(ivec4 current, vec4 nearestCube, vec4 inc, ivec4 iinc) {
+	vec4 intermediateColor = vec4(0, 0, 0, 1);
 	int depth = 0;
 	while (depth < maxDepth) {
 		depth++;
 		if (current.x < 0 || current.x >= 16 || current.y < 0 || current.y >= 16 || current.z < 0 || current.z >= 16 || current.w < 0 || current.w >= 16) {
-			return backgroundColor;
+			intermediateColor = vec4(sqrt(mix(intermediateColor.xyz*intermediateColor.xyz, backgroundColor.xyz*backgroundColor.xyz, intermediateColor.w)), intermediateColor.w * backgroundColor.w);
+			return intermediateColor;
 		}
 
 		vec4 blockColor = block[current.w*16*16*16 + current.z*16*16 + current.y*16 + current.x];
 		if (blockColor.a != 0) {
-			if (reflect(current, nearestCube, inc, iinc, blockColor)) {
-				return blockColor;
+			if (reflect(current, nearestCube, inc, iinc, blockColor, intermediateColor)) {
+				return intermediateColor;
 			}
 		}
 
@@ -166,7 +170,8 @@ vec4 trace(ivec4 current, vec4 nearestCube, vec4 inc, ivec4 iinc) {
 			}
 		}
 	}
-	return backgroundColor;
+	intermediateColor = vec4(sqrt(mix(intermediateColor.xyz*intermediateColor.xyz, backgroundColor.xyz*backgroundColor.xyz, intermediateColor.w)), intermediateColor.w * backgroundColor.w);
+	return intermediateColor;
 }
 
 void main() {
