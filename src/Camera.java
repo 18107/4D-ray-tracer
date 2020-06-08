@@ -37,7 +37,7 @@ public class Camera {
 		if (Mouse.isGrabbed()) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				rxw += Mouse.getDX()*mouseSpeed;
-				rzw += Mouse.getDY()*mouseSpeed;
+				//rzw += Mouse.getDY()*mouseSpeed;
 			} else {
 				rzx += Mouse.getDX()*mouseSpeed;
 				rzy += Mouse.getDY()*mouseSpeed;

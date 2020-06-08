@@ -8,6 +8,9 @@ out vec4 color;
 uniform vec4 cameraPos;
 uniform vec4 cameraRot;
 
+uniform vec4 backgroundColor;
+uniform int maxDepth;
+
 layout(std430, binding = 1) buffer chunk
 {
 	vec4 block[];
@@ -36,6 +39,7 @@ vec4 rotate(vec4 ray, vec4 rotation) {
 	float y;
 	float z;
 	float w;
+
 	//rotate zy
 	y = cos(rotation.x)*ray.y - sin(rotation.x)*ray.z;
 	z = cos(rotation.x)*ray.z + sin(rotation.x)*ray.y;
@@ -48,31 +52,80 @@ vec4 rotate(vec4 ray, vec4 rotation) {
 	ray.x = x;
 	ray.z = z;
 
-	//rotate xw
-	x = cos(rotation.z)*ray.x - sin(rotation.z)*ray.w;
-	w = cos(rotation.z)*ray.w + sin(rotation.z)*ray.x;
-	ray.x = x;
-	ray.w = w;
-
 	//rotate zw
 	z = cos(rotation.w)*ray.z - sin(rotation.w)*ray.w;
 	w = cos(rotation.w)*ray.w + sin(rotation.w)*ray.z;
 	ray.z = z;
 	ray.w = w;
 
+	//rotate xw
+	x = cos(rotation.z)*ray.x - sin(rotation.z)*ray.w;
+	w = cos(rotation.z)*ray.w + sin(rotation.z)*ray.x;
+	ray.x = x;
+	ray.w = w;
+
 	return ray;
 }
 
-void trace(ivec4 current, vec4 nearestCube, vec4 inc, ivec4 iinc) {
-	while (true) {
+bool reflect(inout ivec4 current, inout vec4 nearestCube, inout vec4 inc, inout ivec4 iinc, vec4 blockColor) {
+	if (blockColor.r < 0.75 || blockColor.g > 0.25) {
+		return true;
+	}
+
+	vec4 lastCube = nearestCube-inc;
+	if (lastCube.x > lastCube.y) {
+		if (lastCube.x > lastCube.z) {
+			if (lastCube.x > lastCube.w) {
+				iinc.x = -iinc.x;
+				nearestCube.x -= inc.x;
+			} else {
+				iinc.w = -iinc.w;
+				nearestCube.w -= inc.w;
+			}
+		} else {
+			if (lastCube.z > lastCube.w) {
+				iinc.z = -iinc.z;
+				nearestCube.z -= inc.z;
+			} else {
+				iinc.w = -iinc.w;
+				nearestCube.w -= inc.w;
+			}
+		}
+	} else {
+		if (lastCube.y > lastCube.z) {
+			if (lastCube.y > lastCube.w) {
+				iinc.y = -iinc.y;
+				nearestCube.y -= inc.y;
+			} else {
+				iinc.w = -iinc.w;
+				nearestCube.w -= inc.w;
+			}
+		} else {
+			if (lastCube.z > lastCube.w) {
+				iinc.z = -iinc.z;
+				nearestCube.z -= inc.z;
+			} else {
+				iinc.w = -iinc.w;
+				nearestCube.w -= inc.w;
+			}
+		}
+	}
+	return false;
+}
+
+vec4 trace(ivec4 current, vec4 nearestCube, vec4 inc, ivec4 iinc) {
+	int depth = 0;
+	while (depth < maxDepth) {
+		depth++;
 		if (current.x < 0 || current.x >= 16 || current.y < 0 || current.y >= 16 || current.z < 0 || current.z >= 16 || current.w < 0 || current.w >= 16) {
-			return;
+			return backgroundColor;
 		}
 
 		vec4 blockColor = block[current.w*16*16*16 + current.z*16*16 + current.y*16 + current.x];
 		if (blockColor.a != 0) {
-			color = blockColor;
-			return;
+			if (reflect(current, nearestCube, inc, iinc, blockColor)) {
+				return blockColor;
+			}
 		}
 
 		if (nearestCube.x < nearestCube.y) {
@@ -113,10 +166,10 @@ void trace(ivec4 current, vec4 nearestCube, vec4 inc, ivec4 iinc) {
 			}
 		}
 	}
+	return backgroundColor;
 }
 
 void main() {
-	color = vec4(0.529411765, 0.807843137, 0.921568627, 0); //skyblue
 	vec4 rayDir = rotate(getRaySphere(), cameraRot);
 	vec4 point = cameraPos;
 	ivec4 current = ivec4(floor(cameraPos));
@@ -168,5 +221,5 @@ void main() {
 		iinc.w = -1;
 	}
 
-	trace(current, nearestCube, inc, iinc);
+	color = trace(current, nearestCube, inc, iinc);
 }
