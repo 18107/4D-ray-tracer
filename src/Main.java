@@ -63,7 +63,7 @@ public class Main {
 		int width = 1600;
 		int height = 800;
 		int fpsMax = 60;
-		int maxDepth = 40;
+		int maxDepth = 100;
 		ShaderManager shaderManager = new ShaderManager();
 		try {
 			init(width, height, shaderManager);

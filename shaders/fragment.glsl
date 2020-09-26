@@ -25,6 +25,28 @@ vec4 getRaySphere() {
 		);
 }
 
+vec4 getRaySphereMulti() {
+	float x = texcoord.x;
+	float y = texcoord.y;
+
+	if (texcoord.y > 0.5) {
+		if (texcoord.x > 0.5) {
+			x = (texcoord.x - 0.75)*4;
+			y = (texcoord.y - 0.75)*4;
+		} else if (texcoord.x < -0.5) {
+			x = (texcoord.x + 0.75)*4;
+			y = (texcoord.y - 0.75)*4;
+		}
+	}
+
+	return vec4(
+		sin(x*M_PI)*cos(y*M_PI/2),
+		sin(y*M_PI/2),
+		-cos(x*M_PI)*cos(y*M_PI/2),
+		0
+		);
+}
+
 vec4 getRayFlat() {
 	return vec4(
 		texcoord.x*2,
@@ -63,6 +85,33 @@ vec4 rotate(vec4 ray, vec4 rotation) {
 	w = cos(rotation.z)*ray.w + sin(rotation.z)*ray.x;
 	ray.x = x;
 	ray.w = w;
+
+	return ray;
+}
+
+vec4 rotateMulti(vec4 ray, vec4 rotation) {
+	ray = rotate(ray, rotation);
+
+	float x;
+	float y;
+	float z;
+	float w;
+
+	if (texcoord.y > 0.5) {
+		if (texcoord.x > 0.5) {
+			//rotate xw
+			x = cos(M_PI/2)*ray.x - sin(M_PI/2)*ray.w;
+			w = cos(M_PI/2)*ray.w + sin(M_PI/2)*ray.x;
+			ray.x = x;
+			ray.w = w;
+		} else if (texcoord.x < -0.5) {
+			//rotate zw
+			z = cos(M_PI/2)*ray.z - sin(M_PI/2)*ray.w;
+			w = cos(M_PI/2)*ray.w + sin(M_PI/2)*ray.z;
+			ray.z = z;
+			ray.w = w;
+		}
+	}
 
 	return ray;
 }
@@ -175,7 +224,7 @@ vec4 trace(ivec4 current, vec4 nearestCube, vec4 inc, ivec4 iinc) {
 }
 
 void main() {
-	vec4 rayDir = rotate(getRaySphere(), cameraRot);
+	vec4 rayDir = rotateMulti(getRaySphereMulti(), cameraRot);
 	vec4 point = cameraPos;
 	ivec4 current = ivec4(floor(cameraPos));
 	vec4 nearestCube;

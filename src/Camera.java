@@ -37,7 +37,7 @@ public class Camera {
 		if (Mouse.isGrabbed()) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				rxw += Mouse.getDX()*mouseSpeed;
-				//rzw += Mouse.getDY()*mouseSpeed;
+				rzw += Mouse.getDY()*mouseSpeed;
 			} else {
 				rzx += Mouse.getDX()*mouseSpeed;
 				rzy += Mouse.getDY()*mouseSpeed;
@@ -99,24 +99,19 @@ public class Camera {
 		float t1;
 		float t2;
 		
-		//t1 = cos(rzy)*vector.y - sin(rzy)*vector.z;
-		//t2 = cos(rzy)*vector.z + sin(rzy)*vector.y;
-		//vector.y = t1;
-		//vector.z = t2;
-		
 		t1 = cos(rzx)*vector.x - sin(rzx)*vector.z;
 		t2 = cos(rzx)*vector.z + sin(rzx)*vector.x;
 		vector.x = t1;
 		vector.z = t2;
 		
-		t1 = cos(rxw)*vector.x - sin(rxw)*vector.w;
-		t2 = cos(rxw)*vector.w + sin(rxw)*vector.x;
-		vector.x = t1;
-		vector.w = t2;
-		
 		t1 = cos(rzw)*vector.z - sin(rzw)*vector.w;
 		t2 = cos(rzw)*vector.w + sin(rzw)*vector.z;
 		vector.z = t1;
+		vector.w = t2;
+		
+		t1 = cos(rxw)*vector.x - sin(rxw)*vector.w;
+		t2 = cos(rxw)*vector.w + sin(rxw)*vector.x;
+		vector.x = t1;
 		vector.w = t2;
 	}
 	
