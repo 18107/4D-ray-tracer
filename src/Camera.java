@@ -20,6 +20,8 @@ public class Camera {
 	
 	private long lastTime = System.nanoTime();
 	
+	private Hitbox hitbox = new Hitbox(0.2f, 1.99f, 0.2f, 0.2f);
+	
 	public void update() {
 		long time = System.nanoTime();
 		float delta = (time - lastTime)/1000000000f;
@@ -79,10 +81,15 @@ public class Camera {
 			rotate(dirz);
 			rotate(dirw);
 			
-			x += moveSpeed*delta* (X*dirx.x + Y*diry.x + Z*dirz.x + W*dirw.x);
-			y += moveSpeed*delta* (X*dirx.y + Y*diry.y + Z*dirz.y + W*dirw.y);
-			z += moveSpeed*delta* (X*dirx.z + Y*diry.z + Z*dirz.z + W*dirw.z);
-			w += moveSpeed*delta* (X*dirx.w + Y*diry.w + Z*dirz.w + W*dirw.w);
+			hitbox.move(this,
+					moveSpeed*delta* (X*dirx.x + Y*diry.x + Z*dirz.x + W*dirw.x),
+					moveSpeed*delta* (X*dirx.y + Y*diry.y + Z*dirz.y + W*dirw.y),
+					moveSpeed*delta* (X*dirx.z + Y*diry.z + Z*dirz.z + W*dirw.z),
+					moveSpeed*delta* (X*dirx.w + Y*diry.w + Z*dirz.w + W*dirw.w));
+			//x += moveSpeed*delta* (X*dirx.x + Y*diry.x + Z*dirz.x + W*dirw.x);
+			//y += moveSpeed*delta* (X*dirx.y + Y*diry.y + Z*dirz.y + W*dirw.y);
+			//z += moveSpeed*delta* (X*dirx.z + Y*diry.z + Z*dirz.z + W*dirw.z);
+			//w += moveSpeed*delta* (X*dirx.w + Y*diry.w + Z*dirz.w + W*dirw.w);
 			
 			if (x < 0.01f) x = 0.01f;
 			if (x > 15.99f) x = 15.99f;

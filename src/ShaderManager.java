@@ -39,7 +39,7 @@ public class ShaderManager {
 		}
 		
 		FloatBuffer floatChunkBuffer = BufferUtils.createFloatBuffer(16*16*16*16*4);
-		floatChunkBuffer.put(new WorldManager().getWorld());
+		floatChunkBuffer.put(WorldManager.getWorld());
 		floatChunkBuffer.flip();
 		
 		chunkBuffer = GL15.glGenBuffers();

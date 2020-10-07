@@ -4,11 +4,15 @@ import java.nio.file.Paths;
 
 public class WorldManager {
 
-	private float array[] = new float[16*16*16*16*4];
+	private static float array[];
 	
-	public float[] getWorld() {
+	public static float[] getWorld() {
+		if (array != null) {
+			return array;
+		}
 		try {
 			byte[] byteData = Files.readAllBytes(Paths.get("world/0,0.4D"));
+			array  = new float[16*16*16*16*4];
 			if (byteData.length != array.length)
 				throw new RuntimeException("Filesize: " + byteData.length + ", expected: " + array.length);
 			for (int i = 0; i < array.length; i++) {
