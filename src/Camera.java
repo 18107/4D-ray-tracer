@@ -20,7 +20,7 @@ public class Camera {
 	
 	private long lastTime = System.nanoTime();
 	
-	private Hitbox hitbox = new Hitbox(0.2f, 1.99f, 0.2f, 0.2f);
+	private Hitbox hitbox = new Hitbox(0.2f, 0.99f, 0.2f, 0.2f);
 	
 	public void update() {
 		long time = System.nanoTime();
@@ -74,7 +74,7 @@ public class Camera {
 			
 			Vector4f dirx = new Vector4f(1, 0, 0, 0);
 			Vector4f diry = new Vector4f(0, 1, 0, 0);
-			Vector4f dirz = new Vector4f(0, 0, -1, 0);
+			Vector4f dirz = new Vector4f(0, 0, 1, 0);
 			Vector4f dirw = new Vector4f(0, 0, 0, 1);
 			rotate(dirx);
 			rotate(diry);
@@ -106,13 +106,13 @@ public class Camera {
 		float t1;
 		float t2;
 		
-		t1 = cos(rzx)*vector.x - sin(rzx)*vector.z;
-		t2 = cos(rzx)*vector.z + sin(rzx)*vector.x;
+		t1 = cos(rzx)*vector.x + sin(rzx)*vector.z;
+		t2 = cos(rzx)*vector.z - sin(rzx)*vector.x;
 		vector.x = t1;
 		vector.z = t2;
 		
-		t1 = cos(rzw)*vector.z - sin(rzw)*vector.w;
-		t2 = cos(rzw)*vector.w + sin(rzw)*vector.z;
+		t1 = cos(rzw)*vector.z + sin(rzw)*vector.w;
+		t2 = cos(rzw)*vector.w - sin(rzw)*vector.z;
 		vector.z = t1;
 		vector.w = t2;
 		

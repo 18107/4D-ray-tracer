@@ -20,7 +20,7 @@ vec4 getRaySphere() {
 	return vec4(
 		sin(texcoord.x*M_PI)*cos(texcoord.y*M_PI/2),
 		sin(texcoord.y*M_PI/2),
-		-cos(texcoord.x*M_PI)*cos(texcoord.y*M_PI/2),
+		cos(texcoord.x*M_PI)*cos(texcoord.y*M_PI/2),
 		0
 		);
 }
@@ -42,7 +42,7 @@ vec4 getRaySphereMulti() {
 	return vec4(
 		sin(x*M_PI)*cos(y*M_PI/2),
 		sin(y*M_PI/2),
-		-cos(x*M_PI)*cos(y*M_PI/2),
+		cos(x*M_PI)*cos(y*M_PI/2),
 		0
 		);
 }
@@ -51,7 +51,7 @@ vec4 getRayFlat() {
 	return vec4(
 		texcoord.x*2,
 		texcoord.y,
-		-1,
+		1,
 		0
 		);
 }
@@ -63,20 +63,20 @@ vec4 rotate(vec4 ray, vec4 rotation) {
 	float w;
 
 	//rotate zy
-	y = cos(rotation.x)*ray.y - sin(rotation.x)*ray.z;
-	z = cos(rotation.x)*ray.z + sin(rotation.x)*ray.y;
+	y = cos(rotation.x)*ray.y + sin(rotation.x)*ray.z;
+	z = cos(rotation.x)*ray.z - sin(rotation.x)*ray.y;
 	ray.y = y;
 	ray.z = z;
 
 	//rotate zx
-	x = cos(rotation.y)*ray.x - sin(rotation.y)*ray.z;
-  z = cos(rotation.y)*ray.z + sin(rotation.y)*ray.x;
+	x = cos(rotation.y)*ray.x + sin(rotation.y)*ray.z;
+  z = cos(rotation.y)*ray.z - sin(rotation.y)*ray.x;
 	ray.x = x;
 	ray.z = z;
 
 	//rotate zw
-	z = cos(rotation.w)*ray.z - sin(rotation.w)*ray.w;
-	w = cos(rotation.w)*ray.w + sin(rotation.w)*ray.z;
+	z = cos(rotation.w)*ray.z + sin(rotation.w)*ray.w;
+	w = cos(rotation.w)*ray.w - sin(rotation.w)*ray.z;
 	ray.z = z;
 	ray.w = w;
 
@@ -106,8 +106,8 @@ vec4 rotateMulti(vec4 ray, vec4 rotation) {
 			ray.w = w;
 		} else if (texcoord.x < -0.5) {
 			//rotate zw
-			z = cos(M_PI/2)*ray.z - sin(M_PI/2)*ray.w;
-			w = cos(M_PI/2)*ray.w + sin(M_PI/2)*ray.z;
+			z = cos(M_PI/2)*ray.z + sin(M_PI/2)*ray.w;
+			w = cos(M_PI/2)*ray.w - sin(M_PI/2)*ray.z;
 			ray.z = z;
 			ray.w = w;
 		}
